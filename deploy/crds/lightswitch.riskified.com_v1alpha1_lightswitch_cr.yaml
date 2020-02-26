@@ -1,0 +1,7 @@
+apiVersion: lightswitch.riskified.com/v1alpha1
+kind: LightSwitch
+metadata:
+  name: example-lightswitch
+spec:
+  # Add fields here
+  size: 3
