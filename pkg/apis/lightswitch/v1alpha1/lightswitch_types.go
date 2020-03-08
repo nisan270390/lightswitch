@@ -12,11 +12,13 @@ type LightSwitchSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
-	serviceName string `json:"name"`
-	spotDisable bool   `json:"spotDisable"`
-	logzio      bool   `json:"logzio"`
-	port        int32  `json:"port"`
-	//replicaCount int32  `json:"replicaCount"`
+	ServiceName     string            `json:"name"`
+	Image           string            `json:"image"`
+	Logzio          bool              `json:"logzio"`
+	Port            int32             `json:"port"`
+	ReplicaCount    int32             `json:"replicaCount"`
+	PodAnnotations  map[string]string `json:"podAnnotations"`
+	HealthcheckPath string            `json:"healthcheckPath"`
 }
 
 // LightSwitchStatus defines the observed state of LightSwitch

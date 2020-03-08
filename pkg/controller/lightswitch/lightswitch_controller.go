@@ -6,6 +6,7 @@ import (
 	lightswitchv1alpha1 "LightSwitch/pkg/apis/lightswitch/v1alpha1"
 
 	corev1 "k8s.io/api/core/v1"
+	extensionv1 "k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -147,6 +148,47 @@ func newPodForCR(cr *lightswitchv1alpha1.LightSwitch) *corev1.Pod {
 					Name:    "busybox",
 					Image:   "busybox",
 					Command: []string{"sleep", "3600"},
+				},
+			},
+		},
+	}
+}
+
+// newPodForCR returns a busybox pod with the same name/namespace as the cr
+func newDeployment(cr *lightswitchv1alpha1.LightSwitch) *extensionv1.Deployment {
+	name := cr.Spec.ServiceName + "-light-switch"
+	labels := map[string]string{
+		"app": name,
+	}
+	return &extensionv1.Deployment{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:   name,
+			Labels: labels,
+		},
+
+		Spec: extensionv1.DeploymentSpec{
+			Selector: &metav1.LabelSelector{
+				MatchLabels: labels,
+			},
+
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels:      labels,
+					Annotations: cr.Spec.PodAnnotations,
+				},
+
+				Spec: corev1.PodSpec{
+					ServiceAccountName: cr.Spec.ServiceName,
+					Affinity: &corev1.Affinity{
+						PodAntiAffinity: &corev1.PodAntiAffinity{
+							PreferredDuringSchedulingIgnoredDuringExecution: []corev1.WeightedPodAffinityTerm{
+								{
+									Weight: 90,
+									//PodAffinityTerm: ,
+								},
+							},
+						},
+					},
 				},
 			},
 		},
